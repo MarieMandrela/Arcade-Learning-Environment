@@ -38,6 +38,9 @@ public:
     // Has the user engaged manual control mode?
     bool manual_control_engaged() { return manual_control_active; }
 
+    // Engage manual control
+    void engage_manual_control();
+
     // Captures the keypress of a user in manual control mode.
     Action getUserAction();
 

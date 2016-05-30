@@ -147,6 +147,12 @@ void DisplayScreen::handleSDLEvent(const SDL_Event& event) {
     }
 };
 
+void DisplayScreen::engage_manual_control() {
+    manual_control_active = true;
+    fprintf(stderr, "Manual Control Forced: [Move] "
+                "Arrow keys [Fire] Space [NO-OP] Return.\n");
+}
+
 Action DisplayScreen::getUserAction() {
     if (!manual_control_active) {
         return UNDEFINED;
