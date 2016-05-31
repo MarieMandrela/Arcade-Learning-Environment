@@ -213,7 +213,7 @@ reward_t ALEInterface::act(Action action) {
   std::string rewards_file = theOSystem->settings().getString("record_rewards_filename");
   ofstream reward_stream;
   if (!rewards_file.empty()){
-        reward_stream.open(rewards_file.c_str(), fstream::out);
+        reward_stream.open(rewards_file.c_str(), fstream::app);
   }
 
   reward_t reward = environment->act(action, PLAYER_B_NOOP);
