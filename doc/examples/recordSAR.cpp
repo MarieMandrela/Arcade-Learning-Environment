@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
     ALEInterface ale;
 
     bool recordSound = false;
+
     // Set fragsize to 64 to ensure proper sound sync
     int fragsize = 64;
     std::string rom_file = argv[1];
@@ -56,6 +57,7 @@ int main(int argc, char** argv) {
     // Set record flags
     ale.setString("record_screen_dir", recordPath.c_str());
     ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+    ale.setString("record_rewards_filename",  (recordPath + "/rewards.csv").c_str());
     ale.setInt("fragsize", fragsize);
 
     // Not completely portable, but will work in most cases
@@ -80,6 +82,7 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
     std::cout << "Recording complete. To create a video, you may want to run \n"
         "  doc/scripts/videoRecordingExampleJoinXXX.sh. See manual for details.." << std::endl;
+
 
     return 0;
 }

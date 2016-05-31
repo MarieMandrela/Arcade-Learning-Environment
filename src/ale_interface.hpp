@@ -70,6 +70,9 @@ public:
   void setBool(const std::string& key, const bool value);
   void setFloat(const std::string& key, const float value);
 
+  // Opens the reward stream if path is found in settings
+  void openRewardStream();
+
   // Resets the Atari and loads a game. After this call the game
   // should be ready to play. This is necessary after changing a
   // setting for the setting to take effect.

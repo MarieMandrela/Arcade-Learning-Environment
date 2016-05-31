@@ -714,6 +714,7 @@ void Settings::setDefaultSettings() {
     intSettings.insert(pair<string, int>("fragsize", 64)); // fragsize to 64 ensures proper sound sync
     stringSettings.insert(pair<string, string>("record_screen_dir", ""));
     stringSettings.insert(pair<string, string>("record_sound_filename", ""));
+    stringSettings.insert(pair<string, string>("record_rewards_filename", ""));
 
     // Display Settings
     boolSettings.insert(pair<string, bool>("display_screen", false));

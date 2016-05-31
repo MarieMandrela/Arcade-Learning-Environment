@@ -29,6 +29,8 @@
  **************************************************************************** */
 #include "ale_interface.hpp"
 #include <stdexcept>
+#include <iostream>
+#include <fstream>
 #include <ctime>
 
 using namespace std;
@@ -112,6 +114,7 @@ ALEInterface::ALEInterface(bool display_screen) {
 }
 
 ALEInterface::~ALEInterface() {}
+
 
 // Loads and initializes a game. After this call the game should be
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
@@ -205,15 +208,31 @@ const int ALEInterface::lives() {
 // when necessary - this method will keep pressing buttons on the
 // game over screen.
 reward_t ALEInterface::act(Action action) {
+
+  // Try to open file to record action, reward.
+  std::string rewards_file = theOSystem->settings().getString("record_rewards_filename");
+  ofstream reward_stream;
+  if (!rewards_file.empty()){
+        reward_stream.open(rewards_file.c_str(), fstream::out);
+  }
+
   reward_t reward = environment->act(action, PLAYER_B_NOOP);
+  reward_stream << action << "," << reward << "," << std::endl;
+
   if (theOSystem->p_display_screen != NULL) {
     theOSystem->p_display_screen->display_screen();
-    while (theOSystem->p_display_screen->manual_control_engaged()) {
+    while (theOSystem->p_display_screen->manual_control_engaged() && ! game_over()) {
       Action user_action = theOSystem->p_display_screen->getUserAction();
-      reward += environment->act(user_action, PLAYER_B_NOOP);
+      reward_t r = environment->act(user_action, PLAYER_B_NOOP);
+      reward += r;
       theOSystem->p_display_screen->display_screen();
+      reward_stream << user_action << "," << r << ","  << std::endl;
     }
   }
+
+  reward_stream.flush();
+  reward_stream.close();
+
   return reward;
 }
 
