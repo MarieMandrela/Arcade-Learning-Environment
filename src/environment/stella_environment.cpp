@@ -58,6 +58,15 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
     // Create the screen exporter
     m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
   }
+
+  // If so desired, we save all actions and rewards to a given file
+  std::string rewardFile = m_osystem->settings().getString("record_rewards_filename");
+  if (!rewardFile.empty()) {
+    ale::Logger::Info << "Saving actions and rewards to file: " << rewardFile << std::endl;
+
+    // Create the screen exporter
+    m_action_reward_exporter.reset(new ActionRewardExporter(rewardFile));
+  }
 }
 
 /** Resets the system to its start state. */
@@ -163,7 +172,11 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
         m_screen_exporter->saveNext(m_screen);
 
     // Use the stored actions, which may or may not have changed this frame
-    sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
+    reward_t r = oneStepAct(m_player_a_action, m_player_b_action);
+    sum_rewards += r;
+
+    if (m_action_reward_exporter.get() != NULL)
+        m_action_reward_exporter->saveNext(m_player_a_action, r);
   }
 
   return sum_rewards;

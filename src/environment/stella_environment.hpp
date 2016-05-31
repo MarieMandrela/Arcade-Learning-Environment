@@ -26,6 +26,7 @@
 #include "../emucore/Event.hxx"
 #include "../games/RomSettings.hpp"
 #include "../common/ScreenExporter.hpp"
+#include "../common/ActionRewardExporter.hpp"
 #include "../common/Log.hpp"
 
 #include <stack>
@@ -115,6 +116,7 @@ class StellaEnvironment {
     size_t m_frame_skip; // How many frames to emulate per act()
     float m_repeat_action_probability; // Stochasticity of the environment
     std::auto_ptr<ScreenExporter> m_screen_exporter; // Automatic screen recorder
+    std::auto_ptr<ActionRewardExporter> m_action_reward_exporter; // Automatic action and rewards exporter
 
     // The last actions taken by our players
     Action m_player_a_action, m_player_b_action;

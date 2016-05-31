@@ -52,7 +52,6 @@ int main(int argc, char** argv) {
     if (argc > 2) {
         recordPath = argv[2];
     }
-    std::cout << "saving recording to " << recordPath << std::endl;
 
     // Set record flags
     ale.setString("record_screen_dir", recordPath.c_str());
@@ -67,13 +66,12 @@ int main(int argc, char** argv) {
 
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
-    std::cout << "loading rom file " << rom_file << std::endl;
     ale.loadROM(rom_file);
 
     ale.theOSystem->p_display_screen->engage_manual_control();
 
     // Play a single episode, which we record.
-    // The given action will be overridden by manual control.
+    // The first given action will be overridden by manual control.
     while (!ale.game_over()) {
         Action a;
         ale.act(a);
