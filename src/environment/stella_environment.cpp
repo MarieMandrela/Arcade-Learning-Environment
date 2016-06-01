@@ -53,10 +53,11 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   // If so desired, we record all emulated frames to a given directory 
   std::string recordDir = m_osystem->settings().getString("record_screen_dir");
   if (!recordDir.empty()) {
+    bool recordGray = m_osystem->settings().getBool("record_screen_gray");
     ale::Logger::Info << "Recording screens to directory: " << recordDir << std::endl;
     
     // Create the screen exporter
-    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
+    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir, recordGray));
   }
 
   // If so desired, we save all actions and rewards to a given file

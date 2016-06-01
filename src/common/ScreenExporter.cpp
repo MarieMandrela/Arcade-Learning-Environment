@@ -83,7 +83,7 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool dou
 }
 
 
-static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true) {
+static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true, bool greyScale = false) {
 
     int dataWidth = screen.width(); 
     int width = doubleWidth ? dataWidth * 2 : dataWidth; 
@@ -102,7 +102,12 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
         for(int j = 0; j < dataWidth; j++) {
             int r, g, b;
 
-            palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
+            if (greyScale) {
+                palette.getGrayscale(screen.getArray()[i * dataWidth + j], r, g, b);
+            } else {
+                palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
+            }
+
             // Double the pixel width, if so desired
             int jj = doubleWidth ? 2 * j : j;
 
@@ -147,7 +152,8 @@ static void writePNGEnd(std::ofstream &out) {
 ScreenExporter::ScreenExporter(ColourPalette &palette):
     m_palette(palette),
     m_frame_number(0),
-    m_frame_field_width(6) {
+    m_frame_field_width(6),
+    m_gray_scale(false) {
 }
 
 
@@ -155,7 +161,17 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
     m_palette(palette),
     m_frame_number(0),
     m_frame_field_width(6),
-    m_path(path) {
+    m_path(path),
+    m_gray_scale(false) {
+}
+
+
+ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path, bool grayscale):
+    m_palette(palette),
+    m_frame_number(0),
+    m_frame_field_width(6),
+    m_path(path),
+    m_gray_scale(grayscale) {
 }
 
 
@@ -172,7 +188,7 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
 
     // Now write the PNG proper
     writePNGHeader(out, screen, true);
-    writePNGData(out, screen, m_palette, true);
+    writePNGData(out, screen, m_palette, true, m_gray_scale);
     writePNGEnd(out);
 
     out.close();

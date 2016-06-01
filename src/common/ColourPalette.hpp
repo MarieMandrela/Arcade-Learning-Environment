@@ -28,7 +28,10 @@ class ColourPalette {
         ColourPalette();
 
         /** Converts a given palette value in range [0, 255] into its RGB components. */ 
-        void getRGB(int val, int &r, int &g, int &b) const; 
+        void getRGB(int val, int &r, int &g, int &b) const;
+
+        /** Converts a given palette value in range [0, 255] into its Grayscale components. */
+        void getGrayscale(int val, int &r, int &g, int &b) const;
         
         /** Converts a given palette value into packed RGB (format 0x00RRGGBB). */
         uInt32 getRGB(int val) const;

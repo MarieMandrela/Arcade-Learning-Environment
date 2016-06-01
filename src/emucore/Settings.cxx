@@ -715,6 +715,7 @@ void Settings::setDefaultSettings() {
     stringSettings.insert(pair<string, string>("record_screen_dir", ""));
     stringSettings.insert(pair<string, string>("record_sound_filename", ""));
     stringSettings.insert(pair<string, string>("record_rewards_filename", ""));
+    boolSettings.insert(pair<string, bool>("record_screen_gray", false));
 
     // Display Settings
     boolSettings.insert(pair<string, bool>("display_screen", false));
