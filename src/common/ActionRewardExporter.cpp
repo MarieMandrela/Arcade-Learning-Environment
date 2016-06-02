@@ -19,7 +19,7 @@
 
 ActionRewardExporter::ActionRewardExporter(const std::string &file_name):
     m_file_name(file_name) {
-    m_stream.open(file_name.c_str(), std::ofstream::app);
+    m_stream.open(file_name.c_str());
     if (m_stream.fail()) {
         ale::Logger::Error << "Could not open " << file_name << " for writing" << std::endl;
     }

@@ -72,9 +72,8 @@ int main(int argc, char** argv) {
     ale.theOSystem->p_display_screen->engage_manual_control();
 
     // Play a single episode, which we record.
-    // The first given action will be overridden by manual control.
     while (!ale.game_over()) {
-        Action a;
+        Action a = (Action)PLAYER_A_NOOP;
         ale.act(a);
     }
 
