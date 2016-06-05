@@ -55,8 +55,7 @@ static void writePNGChunk(std::ofstream& out, const char* type, uInt8* data, int
     out.write((const char*)temp, 4);
 }
 
-
-static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool doubleWidth = true) {
+static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool doubleWidth = true, bool grayscale = false) {
 
         int width = doubleWidth ? screen.width() * 2: screen.width();
         int height = screen.height();
@@ -75,15 +74,65 @@ static void writePNGHeader(std::ofstream& out, const ALEScreen &screen, bool dou
         ihdr[6]  = (height >>  8) & 0xFF;
         ihdr[7]  = (height >>  0) & 0xFF;
         ihdr[8]  = 8;  // 8 bits per sample (24 bits per pixel)
-        ihdr[9]  = 2;  // PNG_COLOR_TYPE_RGB
+        ihdr[9]  = grayscale ? 0 : 2;  // PNG_COLOR_TYPE_RGB or GPNG_COLOR_TYPE_GRAY
         ihdr[10] = 0;  // PNG_COMPRESSION_TYPE_DEFAULT
         ihdr[11] = 0;  // PNG_FILTER_TYPE_DEFAULT
         ihdr[12] = 0;  // PNG_INTERLACE_NONE
         writePNGChunk(out, "IHDR", ihdr, sizeof(ihdr));
 }
 
+static void writeGrayscalePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true) {
 
-static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true, bool greyScale = false) {
+    int dataWidth = screen.width();
+    int width = doubleWidth ? dataWidth * 2 : dataWidth;
+    int height = screen.height();
+
+    // If so desired, double the width
+
+    // Fill the buffer with scanline data
+    int rowbytes = width;
+
+    std::vector<uInt8> buffer((rowbytes + 1) * height, 0);
+    uInt8* buf_ptr = &buffer[0];
+
+    for(int i = 0; i < height; i++) {
+        *buf_ptr++ = 0;                  // first byte of row is filter type
+        for(int j = 0; j < dataWidth; j++) {
+            int value;
+
+            value = palette.getGrayscale(screen.getArray()[i * dataWidth + j]);
+
+            // Double the pixel width, if so desired
+            int jj = doubleWidth ? 2 * j : j;
+
+            buf_ptr[jj] = value;
+
+            if (doubleWidth) {
+
+                jj = jj + 1;
+
+                buf_ptr[jj] = value;
+            }
+        }
+        buf_ptr += rowbytes;                 // add pitch
+    }
+
+    // Compress the data with zlib
+    uLongf compmemsize = (uLongf)((height * (width + 1) + 1) + 12);
+    std::vector<uInt8> compmem(compmemsize, 0);
+
+    if((compress(&compmem[0], &compmemsize, &buffer[0], height * (width + 1)) != Z_OK)) {
+
+        // @todo -- throw a proper exception
+        ale::Logger::Error << "Error: Couldn't compress PNG" << std::endl;
+        return;
+    }
+
+    // Write the compressed framebuffer data
+    writePNGChunk(out, "IDAT", &compmem[0], compmemsize);
+}
+
+static void writePNGData(std::ofstream &out, const ALEScreen &screen, const ColourPalette &palette, bool doubleWidth = true) {
 
     int dataWidth = screen.width(); 
     int width = doubleWidth ? dataWidth * 2 : dataWidth; 
@@ -102,11 +151,7 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
         for(int j = 0; j < dataWidth; j++) {
             int r, g, b;
 
-            if (greyScale) {
-                palette.getGrayscale(screen.getArray()[i * dataWidth + j], r, g, b);
-            } else {
-                palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
-            }
+            palette.getRGB(screen.getArray()[i * dataWidth + j], r, g, b);
 
             // Double the pixel width, if so desired
             int jj = doubleWidth ? 2 * j : j;
@@ -174,7 +219,6 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path, 
     m_gray_scale(grayscale) {
 }
 
-
 void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) const {
 
     // Open file for writing 
@@ -186,9 +230,13 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
         return;
     }
 
+    writePNGHeader(out, screen, true, m_gray_scale);
     // Now write the PNG proper
-    writePNGHeader(out, screen, true);
-    writePNGData(out, screen, m_palette, true, m_gray_scale);
+    if (m_gray_scale == true) {
+        writeGrayscalePNGData(out, screen, m_palette, true);
+    } else {
+        writePNGData(out, screen, m_palette, true);
+    }
     writePNGEnd(out);
 
     out.close();

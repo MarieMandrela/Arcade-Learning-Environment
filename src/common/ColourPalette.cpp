@@ -54,17 +54,6 @@ void ColourPalette::getRGB(int val, int &r, int &g, int &b) const
     b = (m_palette[val] >>  0) & 0xFF;
 }
 
-void ColourPalette::getGrayscale(int val, int &r, int &g, int &b) const
-{
-    assert (m_palette != NULL);
-    assert(val >= 0 && val <= 0xFF);
-
-    // Set the RGB components accordingly
-    r = m_palette[val] & 0xFF;
-    g = m_palette[val] & 0xFF;
-    b = m_palette[val] & 0xFF;
-}
-
 uInt8 ColourPalette::getGrayscale(int val) const
 {
     assert (m_palette != NULL);
