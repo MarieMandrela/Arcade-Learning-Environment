@@ -54,10 +54,11 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
   std::string recordDir = m_osystem->settings().getString("record_screen_dir");
   if (!recordDir.empty()) {
     bool recordGray = m_osystem->settings().getBool("record_screen_gray");
+    bool doubleScreen = m_osystem->settings().getBool("record_double_width");
     ale::Logger::Info << "Recording screens to directory: " << recordDir << std::endl;
     
     // Create the screen exporter
-    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir, recordGray));
+    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir, recordGray, doubleScreen));
   }
 
   // If so desired, we save all actions and rewards to a given file

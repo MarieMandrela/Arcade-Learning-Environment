@@ -190,7 +190,7 @@ static void writePNGData(std::ofstream &out, const ALEScreen &screen, const Colo
 
 static void writePNGEnd(std::ofstream &out) {
 
-    // Finish up
+    // Finish upb
     writePNGChunk(out, "IEND", 0, 0);
 }
 
@@ -198,7 +198,8 @@ ScreenExporter::ScreenExporter(ColourPalette &palette):
     m_palette(palette),
     m_frame_number(0),
     m_frame_field_width(6),
-    m_gray_scale(false) {
+    m_gray_scale(false),
+    m_double_width(true) {
 }
 
 
@@ -207,16 +208,18 @@ ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path):
     m_frame_number(0),
     m_frame_field_width(6),
     m_path(path),
-    m_gray_scale(false) {
+    m_gray_scale(false),
+    m_double_width(true) {
 }
 
 
-ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path, bool grayscale):
+ScreenExporter::ScreenExporter(ColourPalette &palette, const std::string &path, bool grayscale, bool doubleWidth):
     m_palette(palette),
     m_frame_number(0),
     m_frame_field_width(6),
     m_path(path),
-    m_gray_scale(grayscale) {
+    m_gray_scale(grayscale),
+    m_double_width(doubleWidth) {
 }
 
 void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) const {
@@ -230,12 +233,12 @@ void ScreenExporter::save(const ALEScreen &screen, const std::string &filename) 
         return;
     }
 
-    writePNGHeader(out, screen, true, m_gray_scale);
+    writePNGHeader(out, screen, m_double_width, m_gray_scale);
     // Now write the PNG proper
     if (m_gray_scale == true) {
-        writeGrayscalePNGData(out, screen, m_palette, true);
+        writeGrayscalePNGData(out, screen, m_palette, m_double_width);
     } else {
-        writePNGData(out, screen, m_palette, true);
+        writePNGData(out, screen, m_palette, m_double_width);
     }
     writePNGEnd(out);
 

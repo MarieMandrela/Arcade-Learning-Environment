@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
     ale.setString("record_screen_dir", recordPath.c_str());
     ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
     ale.setString("record_rewards_filename",  (recordPath + "/rewards.csv").c_str());
+    ale.setBool("record_double_width", false);
     ale.setBool("record_screen_gray", true);
     ale.setInt("fragsize", fragsize);
 

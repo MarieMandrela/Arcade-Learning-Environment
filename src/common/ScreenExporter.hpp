@@ -34,7 +34,7 @@ class ScreenExporter {
 
         /** Creates a new ScreenExporter which will save frames successively in the directory provided.
          Frames are sequentially named with 6 digits, starting at 000000. */
-        ScreenExporter(ColourPalette &palette, const std::string &path, bool grayscale);
+        ScreenExporter(ColourPalette &palette, const std::string &path, bool grayscale, bool doubleWidth);
 
         /** Save the given screen to the given filename. No paths are created. */
         void save(const ALEScreen &screen, const std::string &filename) const;
@@ -48,6 +48,9 @@ class ScreenExporter {
 
         /** Are frames exported in greyscale **/
         bool m_gray_scale;
+
+        /** Is the screen doubled in width **/
+        bool m_double_width;
 
         /** The next frame number. */
         int m_frame_number;
